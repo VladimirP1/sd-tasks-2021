@@ -1,0 +1,63 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<head>
+<title>Todo lists</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div th:each="tasks_list : ${tasks_lists}">
+    <form th:id="'delete_list_form_'+${tasks_list.id}" method="post" action="/delete_tasks_list">
+            <input type="hidden" th:value="${tasks_list.id}" name="id" />
+    </form>
+    <table class="tasks">
+        <tr class="list_head">
+            <th colspan="3" th:text="'Task list: ' + ${tasks_list.name}"></th>
+            <th>
+                <button type="submit" th:form="'delete_list_form_'+${tasks_list.id}">➖</button>
+            </th>
+        </tr>
+        <tr>
+            <th>Done?</th>
+            <th>Name</th>
+            <th>Description</th>
+            <th></th>
+        </tr>
+        <tr th:each="task : ${tasks_list.tasks}">
+            <td>
+                <div style="position: relative">
+                    <input type="checkbox" value="done" th:checked="${task.done}" th:disabled="${task.done}">
+                    <button type="submit" class="overlay" th:form="'mark_form_'+${task.id}" th:disabled="${task.done}"></button>
+                </div>
+            </td>
+            <td th:text="${task.name}"></td>
+            <td th:text="${task.description}"></td>
+            <td>
+                <button type="submit" th:form="'delete_form_'+${task.id}">➖</button>
+            </td>
+        </tr>
+        <tr>
+            <td></td>
+            <td><input th:form="'add_form_'+${tasks_list.id}" type="text" placeholder="Name" name="name"/></td>
+            <td><textarea th:form="'add_form_'+${tasks_list.id}" th:name="description"></textarea></td>
+            <td><button th:form="'add_form_'+${tasks_list.id}" type="submit" class="create">➕</button></td>
+        </tr>
+    </table>
+    <form th:id="'add_form_'+${tasks_list.id}" method="post" action="/add_task">
+        <input type="hidden" th:value="${tasks_list.id}" name="id" />
+    </form>
+    <form th:each="task : ${tasks_list.tasks}" th:id="'delete_form_'+${task.id}" method="post" action="/delete_task" >
+        <input type="hidden" th:value="${task.id}" name="id" />
+    </form>
+    <form th:each="task : ${tasks_list.tasks}" th:id="'mark_form_'+${task.id}" method="post" action="/mark_done">
+        <input type="hidden" th:value="${task.id}" name="id" />
+    </form>
+</div>
+
+<form method="post" action="/add_tasks_list">
+    <label for="tasklist_name_input">New list</label>
+    <input id="tasklist_name_input" type="text" placeholder="Name" th:name="name"/>
+    <button type="submit" class="create">Add list</button>
+</form>
+
+</body>
+</html>
