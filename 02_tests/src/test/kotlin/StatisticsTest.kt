@@ -2,9 +2,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class StatisticsTest {
-    private val timeProvider = object : ITimestampProvider {
-        override fun getTimestamp(): Long = 123456
-    }
+    private val timeProvider = mockedTimestamp(123456)
 
     private val statistics = Statistics(timeProvider)
 
@@ -35,6 +33,6 @@ class StatisticsTest {
                 })
         }
 
-        assertEquals(listOf(1, 2, 0), statistics.Compute("#hashtag", resp, 3))
+        assertEquals(listOf(1, 2, 0), statistics.compute("#hashtag", resp, 3))
     }
 }

@@ -1,7 +1,7 @@
 class Statistics(private val timeProvider: ITimestampProvider) {
     private val regex = Regex("""#\w+""")
 
-    fun Compute(query: String, response: ISearchResult, durationHours: Int): List<Int> {
+    fun compute(query: String, response: ISearchResult, durationHours: Int): List<Int> {
         val timestamp = timeProvider.getTimestamp()
         val kSecondsInHour = 60 * 60
         val bins: Map<Int, Int> =
