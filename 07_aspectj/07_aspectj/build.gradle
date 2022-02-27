@@ -1,0 +1,21 @@
+plugins {
+    id 'java'
+    id 'io.freefair.aspectj.compile-time-weaving' version '3.8.4'
+}
+
+group 'com.github.vladimirp1'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.aspectj:aspectjrt:1.9.4'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
+}
+
+test {
+    useJUnitPlatform()
+}
