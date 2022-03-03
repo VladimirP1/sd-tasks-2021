@@ -38,7 +38,10 @@ class ParserVisitor : TokenVisitor() {
     override fun visit(token: ClosingBrace) {
         while (stack.isNotEmpty()) {
             when (val top = stack.last()) {
-                is OpeningBrace -> break
+                is OpeningBrace -> {
+                    stack.removeLast()
+                    return
+                }
                 is Operation -> {
                     output.add(top)
                     stack.removeLast()
@@ -46,12 +49,14 @@ class ParserVisitor : TokenVisitor() {
                 else -> throw RuntimeException()
             }
         }
+        throw RuntimeException("No matching opening brace")
     }
 
     override fun visitAll(tokens: List<Token>) {
         visit(OpeningBrace())
         super.visitAll(tokens)
         visit(ClosingBrace())
+        if (stack.isNotEmpty()) throw RuntimeException("Syntax error")
     }
 
     private class PriorityVisitor(var priority: Int? = null) : TokenVisitor() {

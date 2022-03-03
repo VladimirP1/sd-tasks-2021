@@ -3,7 +3,7 @@ class Tokenizer(s: String) {
     private var state = StartState() as State
 
     init {
-        s.forEach { state.char(it) }
+        s.forEach { if (!it.isWhitespace()) state.char(it) }
         state.eof()
     }
 
@@ -26,7 +26,7 @@ class Tokenizer(s: String) {
                 in listOf('+', '-', '*', '/') ->
                     tokens.add(makeOpToken(c))
                 in listOf('(', ')') -> tokens.add(makeParToken(c))
-                else -> throw RuntimeException()
+                else -> throw RuntimeException("Unexpected character in input: $c")
             }
         }
 
