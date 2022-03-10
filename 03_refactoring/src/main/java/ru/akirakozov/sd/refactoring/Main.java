@@ -5,6 +5,8 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import ru.akirakozov.sd.refactoring.connection.ConnectionProvider;
 import ru.akirakozov.sd.refactoring.connection.ConnectionProviderImpl;
+import ru.akirakozov.sd.refactoring.dao.DatabaseProductsDao;
+import ru.akirakozov.sd.refactoring.dao.ProductsDao;
 import ru.akirakozov.sd.refactoring.servlet.AddProductServlet;
 import ru.akirakozov.sd.refactoring.servlet.GetProductsServlet;
 import ru.akirakozov.sd.refactoring.servlet.QueryServlet;
@@ -20,16 +22,9 @@ public class Main {
     public static void main(String[] args) throws Exception {
         ConnectionProvider provider = new ConnectionProviderImpl();
 
-        try (Connection c = provider.getConnection()) {
-            String sql = "CREATE TABLE IF NOT EXISTS PRODUCT" +
-                    "(ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL," +
-                    " NAME           TEXT    NOT NULL, " +
-                    " PRICE          INT     NOT NULL)";
-            Statement stmt = c.createStatement();
+        ProductsDao dao = new DatabaseProductsDao(provider);
 
-            stmt.executeUpdate(sql);
-            stmt.close();
-        }
+        dao.createTable();
 
         Server server = new Server(8081);
 
@@ -37,9 +32,9 @@ public class Main {
         context.setContextPath("/");
         server.setHandler(context);
 
-        context.addServlet(new ServletHolder(new AddProductServlet(provider)), "/add-product");
-        context.addServlet(new ServletHolder(new GetProductsServlet(provider)),"/get-products");
-        context.addServlet(new ServletHolder(new QueryServlet(provider)),"/query");
+        context.addServlet(new ServletHolder(new AddProductServlet(dao)), "/add-product");
+        context.addServlet(new ServletHolder(new GetProductsServlet(dao)),"/get-products");
+        context.addServlet(new ServletHolder(new QueryServlet(dao)),"/query");
 
         server.start();
         server.join();

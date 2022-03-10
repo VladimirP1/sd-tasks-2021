@@ -1,6 +1,8 @@
 package ru.akirakozov.sd.refactoring.servlet;
 
 import ru.akirakozov.sd.refactoring.connection.ConnectionProvider;
+import ru.akirakozov.sd.refactoring.dao.ProductsDao;
+import ru.akirakozov.sd.refactoring.model.Product;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -10,36 +12,27 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.List;
 
 /**
  * @author akirakozov
  */
 public class GetProductsServlet extends HttpServlet {
-    private final ConnectionProvider connectionProvider;
+    private final ProductsDao dao;
 
-    public GetProductsServlet(ConnectionProvider connectionProvider) {
-        this.connectionProvider = connectionProvider;
+    public GetProductsServlet(ProductsDao dao) {
+        this.dao = dao;
     }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         try {
-            try (Connection c = connectionProvider.getConnection()) {
-                Statement stmt = c.createStatement();
-                ResultSet rs = stmt.executeQuery("SELECT * FROM PRODUCT");
-                response.getWriter().println("<html><body>");
-
-                while (rs.next()) {
-                    String name = rs.getString("name");
-                    int price = rs.getInt("price");
-                    response.getWriter().println(name + "\t" + price + "</br>");
-                }
-                response.getWriter().println("</body></html>");
-
-                rs.close();
-                stmt.close();
+            List<Product> products = dao.get();
+            response.getWriter().println("<html><body>");
+            for (Product p : products) {
+                response.getWriter().println(p.name + "\t" + p.price + "</br>");
             }
-
+            response.getWriter().println("</body></html>");
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

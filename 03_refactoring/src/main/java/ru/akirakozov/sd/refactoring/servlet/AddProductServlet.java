@@ -1,6 +1,8 @@
 package ru.akirakozov.sd.refactoring.servlet;
 
 import ru.akirakozov.sd.refactoring.connection.ConnectionProvider;
+import ru.akirakozov.sd.refactoring.dao.ProductsDao;
+import ru.akirakozov.sd.refactoring.model.Product;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -14,10 +16,10 @@ import java.sql.Statement;
  * @author akirakozov
  */
 public class AddProductServlet extends HttpServlet {
-    private final ConnectionProvider connectionProvider;
+    private final ProductsDao dao;
 
-    public AddProductServlet(ConnectionProvider connectionProvider) {
-        this.connectionProvider = connectionProvider;
+    public AddProductServlet(ProductsDao dao) {
+        this.dao = dao;
     }
 
     @Override
@@ -26,13 +28,7 @@ public class AddProductServlet extends HttpServlet {
         long price = Long.parseLong(request.getParameter("price"));
 
         try {
-            try (Connection c = connectionProvider.getConnection()) {
-                String sql = "INSERT INTO PRODUCT " +
-                        "(NAME, PRICE) VALUES (\"" + name + "\"," + price + ")";
-                Statement stmt = c.createStatement();
-                stmt.executeUpdate(sql);
-                stmt.close();
-            }
+            dao.addProduct(new Product(name, price));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
