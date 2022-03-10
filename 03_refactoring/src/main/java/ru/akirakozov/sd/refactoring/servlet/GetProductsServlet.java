@@ -2,6 +2,7 @@ package ru.akirakozov.sd.refactoring.servlet;
 
 import ru.akirakozov.sd.refactoring.connection.ConnectionProvider;
 import ru.akirakozov.sd.refactoring.dao.ProductsDao;
+import ru.akirakozov.sd.refactoring.html.HtmlWriter;
 import ru.akirakozov.sd.refactoring.model.Product;
 
 import javax.servlet.http.HttpServlet;
@@ -26,13 +27,11 @@ public class GetProductsServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        try {
+        try (HtmlWriter writer = new HtmlWriter(response.getWriter())) {
             List<Product> products = dao.get();
-            response.getWriter().println("<html><body>");
             for (Product p : products) {
-                response.getWriter().println(p.name + "\t" + p.price + "</br>");
+                writer.addProduct(p);
             }
-            response.getWriter().println("</body></html>");
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
