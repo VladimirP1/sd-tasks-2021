@@ -3,6 +3,8 @@ package ru.akirakozov.sd.refactoring;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import ru.akirakozov.sd.refactoring.connection.ConnectionProvider;
+import ru.akirakozov.sd.refactoring.connection.ConnectionProviderImpl;
 import ru.akirakozov.sd.refactoring.servlet.AddProductServlet;
 import ru.akirakozov.sd.refactoring.servlet.GetProductsServlet;
 import ru.akirakozov.sd.refactoring.servlet.QueryServlet;
@@ -16,7 +18,9 @@ import java.sql.Statement;
  */
 public class Main {
     public static void main(String[] args) throws Exception {
-        try (Connection c = DriverManager.getConnection("jdbc:sqlite:test.db")) {
+        ConnectionProvider provider = new ConnectionProviderImpl();
+
+        try (Connection c = provider.getConnection()) {
             String sql = "CREATE TABLE IF NOT EXISTS PRODUCT" +
                     "(ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL," +
                     " NAME           TEXT    NOT NULL, " +
@@ -33,9 +37,9 @@ public class Main {
         context.setContextPath("/");
         server.setHandler(context);
 
-        context.addServlet(new ServletHolder(new AddProductServlet()), "/add-product");
-        context.addServlet(new ServletHolder(new GetProductsServlet()),"/get-products");
-        context.addServlet(new ServletHolder(new QueryServlet()),"/query");
+        context.addServlet(new ServletHolder(new AddProductServlet(provider)), "/add-product");
+        context.addServlet(new ServletHolder(new GetProductsServlet(provider)),"/get-products");
+        context.addServlet(new ServletHolder(new QueryServlet(provider)),"/query");
 
         server.start();
         server.join();

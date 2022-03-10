@@ -1,5 +1,7 @@
 package ru.akirakozov.sd.refactoring.servlet;
 
+import ru.akirakozov.sd.refactoring.connection.ConnectionProvider;
+
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -13,18 +15,23 @@ import java.sql.Statement;
  * @author akirakozov
  */
 public class GetProductsServlet extends HttpServlet {
+    private final ConnectionProvider connectionProvider;
+
+    public GetProductsServlet(ConnectionProvider connectionProvider) {
+        this.connectionProvider = connectionProvider;
+    }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         try {
-            try (Connection c = DriverManager.getConnection("jdbc:sqlite:test.db")) {
+            try (Connection c = connectionProvider.getConnection()) {
                 Statement stmt = c.createStatement();
                 ResultSet rs = stmt.executeQuery("SELECT * FROM PRODUCT");
                 response.getWriter().println("<html><body>");
 
                 while (rs.next()) {
-                    String  name = rs.getString("name");
-                    int price  = rs.getInt("price");
+                    String name = rs.getString("name");
+                    int price = rs.getInt("price");
                     response.getWriter().println(name + "\t" + price + "</br>");
                 }
                 response.getWriter().println("</body></html>");

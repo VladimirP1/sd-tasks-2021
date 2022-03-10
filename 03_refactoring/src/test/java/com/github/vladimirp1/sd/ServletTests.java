@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import ru.akirakozov.sd.refactoring.Main;
+import ru.akirakozov.sd.refactoring.connection.ConnectionProviderImpl;
 import ru.akirakozov.sd.refactoring.servlet.AddProductServlet;
 import ru.akirakozov.sd.refactoring.servlet.GetProductsServlet;
 import ru.akirakozov.sd.refactoring.servlet.QueryServlet;
@@ -63,7 +64,6 @@ class TestHelper {
 public class ServletTests {
     @Test
     void SmokeTest() throws Exception {
-
         TestHelper hlp = new TestHelper();
         hlp.test(() -> {
             String s = hlp.withPrintWriter((it)-> {
@@ -71,7 +71,7 @@ public class ServletTests {
                 when(req.getMethod()).thenReturn("GET");
                 HttpServletResponse resp = mock(HttpServletResponse.class);
                 when(resp.getWriter()).thenReturn(it);
-                GetProductsServlet sr = new GetProductsServlet();
+                GetProductsServlet sr = new GetProductsServlet(new ConnectionProviderImpl());
                 sr.service(req, resp);
             });
             assertEquals("", Jsoup.parse(s).body().text());
@@ -89,7 +89,7 @@ public class ServletTests {
                 when(req.getParameter("price")).thenReturn("1000000");
                 HttpServletResponse resp = mock(HttpServletResponse.class);
                 when(resp.getWriter()).thenReturn(it);
-                AddProductServlet sr = new AddProductServlet();
+                AddProductServlet sr = new AddProductServlet(new ConnectionProviderImpl());
                 sr.service(req, resp);
             });
             assertEquals("OK", Jsoup.parse(s_add).body().text());
@@ -99,7 +99,7 @@ public class ServletTests {
                 when(req.getMethod()).thenReturn("GET");
                 HttpServletResponse resp = mock(HttpServletResponse.class);
                 when(resp.getWriter()).thenReturn(it);
-                GetProductsServlet sr = new GetProductsServlet();
+                GetProductsServlet sr = new GetProductsServlet(new ConnectionProviderImpl());
                 sr.service(req, resp);
             });
             assertEquals("iphone 1000000", Jsoup.parse(s_get).body().text());
@@ -117,7 +117,7 @@ public class ServletTests {
                 when(req.getParameter("price")).thenReturn("1000000");
                 HttpServletResponse resp = mock(HttpServletResponse.class);
                 when(resp.getWriter()).thenReturn(it);
-                AddProductServlet sr = new AddProductServlet();
+                AddProductServlet sr = new AddProductServlet(new ConnectionProviderImpl());
                 sr.service(req, resp);
             });
             assertEquals("OK", Jsoup.parse(s_add).body().text());
@@ -128,7 +128,7 @@ public class ServletTests {
                 when(req.getParameter("command")).thenReturn("count");
                 HttpServletResponse resp = mock(HttpServletResponse.class);
                 when(resp.getWriter()).thenReturn(it);
-                QueryServlet sr = new QueryServlet();
+                QueryServlet sr = new QueryServlet(new ConnectionProviderImpl());
                 sr.service(req, resp);
             });
             assertEquals("Number of products: 1", Jsoup.parse(s_get).body().text());
