@@ -1,6 +1,7 @@
 plugins {
     id 'org.jetbrains.kotlin.jvm' version '1.5.10'
     id 'java'
+    id 'application'
 }
 
 group 'org.example'
@@ -8,26 +9,27 @@ version '1.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
-    mavenCentral()
 }
 
 dependencies {
+    implementation platform('io.projectreactor:reactor-bom:2020.0.17')
+
     implementation "org.jetbrains.kotlin:kotlin-stdlib"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-reactive:1.6.0"
-    implementation "io.ktor:ktor-server-core:$ktor_version"
-    implementation "io.ktor:ktor-server-netty:$ktor_version"
-    implementation "io.ktor:ktor-html-builder:$ktor_version"
-    implementation "io.ktor:ktor-freemarker:$ktor_version"
-    implementation "io.ktor:ktor-html-builder:$ktor_version"
-    implementation 'org.mongodb:mongodb-driver-reactivestreams:4.5.0'
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.6.0"
+    implementation 'io.projectreactor.netty:reactor-netty-core'
+    implementation 'io.projectreactor.netty:reactor-netty-http'
+    implementation 'org.kodein.di:kodein-di-jvm:7.11.0'
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.13.2'
+    implementation 'org.litote.kmongo:kmongo-coroutine:4.5.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
     implementation "org.slf4j:slf4j-api:1.7.36"
     implementation "org.slf4j:slf4j-simple:1.7.36"
-
-
 }
+
+mainClassName = 'MainKt'
+//mainClassName = 'MongoTestKt'
 
 test {
     useJUnitPlatform()
